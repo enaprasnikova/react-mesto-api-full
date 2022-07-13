@@ -1,0 +1,9 @@
+.register {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: #000000;
+  width: 358px;
+  max-width: 100%;
+  margin: 60px auto;
+}

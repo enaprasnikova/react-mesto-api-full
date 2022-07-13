@@ -1,0 +1,11 @@
+.popup__container-img {
+  position: relative;
+  background-color: transparent;
+}
+
+@media screen and (max-width: 981px) {
+  .popup__container-img {
+    max-width: 240px;
+    padding: 0 40px;
+  }
+}

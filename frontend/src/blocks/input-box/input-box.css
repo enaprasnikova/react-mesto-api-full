@@ -1,0 +1,10 @@
+.input-box {
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (max-width: 981px) {
+  .input-box {
+    width: 238px;
+  }
+}

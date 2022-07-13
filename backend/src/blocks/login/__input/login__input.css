@@ -1,0 +1,19 @@
+.login__input {
+  height: 27px;
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #CCCCCC;
+  font-family: Inter, Arial, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  background-color: black;
+  color: #FFFFFF;
+  padding: 0;
+}
+
+.login__input::placeholder {
+  font-weight: 400;
+  color: #CCCCCC;
+}

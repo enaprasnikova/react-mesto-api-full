@@ -1,0 +1,19 @@
+.register__sign-in {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  margin: 15px 0 0;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  color: #FFFFFF;
+}
+
+@media screen and (max-width: 981px) {
+  .register__sign-in {
+    margin: 20px 0 0;
+  }
+}
