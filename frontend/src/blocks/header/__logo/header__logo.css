@@ -1,6 +1,6 @@
 .header__logo {
 	display: block;
-	max-width: 142px;
+	width: 142px;
 	min-height: 33px;
 	margin-bottom: 41px;
 	background-image: url(../../../images/header-logo.svg);
