@@ -14,9 +14,9 @@ const userRoutes = require('./routes/users');
 
 const cardRoutes = require('./routes/cards');
 
-const auth = require('./middlewares/auth');
-
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+
+const auth = require('./middlewares/auth');
 
 const { STATUS_VALIDATION_ERROR } = require('./utils/statusCodes');
 
