@@ -53,7 +53,7 @@ const options = {
     'http://api.frontend.mesto-evnap.nomoredomains.xyz',
     'https://api.frontend.mesto-evnap.nomoredomains.xyz',
   ],
-  credentials: true // эта опция позволяет устанавливать куки
+  credentials: true, // эта опция позволяет устанавливать куки
 };
 
 app.use('*', cors(options)); // Подключаем первой миддлварой
