@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_URL : 'http://localhost:3001';
+const BASE_URL = `${window.location.protocol}${process.env.REACT_APP_API_URL || 'http://localhost:3001'}`;
 
 export const register = (password, email) => {
   return fetch(`${BASE_URL}/signup`, {
