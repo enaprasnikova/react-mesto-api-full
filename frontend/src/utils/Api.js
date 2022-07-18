@@ -1,3 +1,5 @@
+const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_URL : 'http://localhost:3001';
+
 class Api {
   constructor(options) {
     this._options = options;
@@ -93,7 +95,7 @@ class Api {
 }
 
 export const api = new Api({
-  baseUrl: 'http://localhost:3001',
+  baseUrl: BASE_URL,
   headers: {
     'Content-Type': 'application/json'
   }
