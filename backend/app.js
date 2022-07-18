@@ -47,7 +47,9 @@ mongoose.connect('mongodb://localhost:27017/mestodb ', {
 const options = {
   origin: [
     'http://localhost:3000',
-    'https://frontend.mesto-evnap.nomoredomains.xyz',
+    'http://localhost:3001',
+    'http://frontend.mesto-evnap.nomoredomains.xyz',
+    'http://api.frontend.mesto-evnap.nomoredomains.xyz',
   ],
   credentials: true // эта опция позволяет устанавливать куки
 };
