@@ -6,7 +6,7 @@ const Users = require('../models/user');
 
 const SALT_ROUNDS = 10;
 
-const SECRET_KEY = 'very-secret';
+const { JWT_SECRET, NODE_ENV } = process.env;
 
 const {
   STATUS_SUCCESS,
@@ -48,7 +48,7 @@ module.exports.login = (req, res) => {
 
       return jwt.sign(
         { _id: user._id },
-        SECRET_KEY,
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
     })

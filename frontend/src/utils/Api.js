@@ -9,21 +9,27 @@ class Api {
   }
 
   getInitialCards() {
+    this._options.headers.authorization = `Bearer ${localStorage.getItem('token')}`;
     return this._makeRequest(`${this._options.baseUrl}/cards`, {
-      headers: this._options.headers
+      headers: this._options.headers,
+      credentials: 'include',
     })
   }
 
   getUserInfo() {
+    this._options.headers.authorization = `Bearer ${localStorage.getItem('token')}`;
     return this._makeRequest(`${this._options.baseUrl}/users/me`, {
-      headers: this._options.headers
+      headers: this._options.headers,
+      credentials: 'include',
     })       
   }
 
   editProfile(name, info) {
+    this._options.headers.authorization = `Bearer ${localStorage.getItem('token')}`;
     return this._makeRequest(`${this._options.baseUrl}/users/me`, {
       method: 'PATCH',
       headers: this._options.headers,
+      credentials: 'include',
       body: JSON.stringify({
         name: name,
         about: info
@@ -32,9 +38,11 @@ class Api {
   }
 
   addCard(name, link) {
+    this._options.headers.authorization = `Bearer ${localStorage.getItem('token')}`;
     return this._makeRequest(`${this._options.baseUrl}/cards`, {
       method: 'POST',
       headers: this._options.headers,
+      credentials: 'include',
       body: JSON.stringify({
         name,
         link
@@ -43,23 +51,29 @@ class Api {
   }
 
   deleteCard(id) {
+    this._options.headers.authorization = `Bearer ${localStorage.getItem('token')}`;
     return this._makeRequest(`${this._options.baseUrl}/cards/${id}`, {
       method: 'DELETE',
-      headers: this._options.headers
+      headers: this._options.headers,
+      credentials: 'include',
     })       
   }
 
   deleteLike(id) {
+    this._options.headers.authorization = `Bearer ${localStorage.getItem('token')}`;
     return this._makeRequest(`${this._options.baseUrl}/cards/${id}/likes`, {
       method: 'DELETE',
-      headers: this._options.headers
+      headers: this._options.headers,
+      credentials: 'include',
     }) 
   }
 
   addLike(id) {
+    this._options.headers.authorization = `Bearer ${localStorage.getItem('token')}`;
     return this._makeRequest(`${this._options.baseUrl}/cards/${id}/likes`, {
       method: 'PUT',
-      headers: this._options.headers
+      headers: this._options.headers,
+      credentials: 'include',
     }) 
   }
 
@@ -68,18 +82,19 @@ class Api {
   }
 
   changeAvatar(data) {
+    this._options.headers.authorization = `Bearer ${localStorage.getItem('token')}`;
     return this._makeRequest(`${this._options.baseUrl}/users/me/avatar`, {
       method: 'PATCH',
       headers: this._options.headers,
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      credentials: 'include',
     })      
   }
 }
 
 export const api = new Api({
-  baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-39',
+  baseUrl: 'http://localhost:3001',
   headers: {
-    authorization: 'cddcd137-fbb7-43b3-abeb-f608589b305e',
     'Content-Type': 'application/json'
   }
 });

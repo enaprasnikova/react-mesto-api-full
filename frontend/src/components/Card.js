@@ -8,9 +8,8 @@ import { CurrentUserContext } from '../contexts/CurrentUserContext';
 function Card({card, onCardClick, onDeleteCard, onCardLike, onCardDelete}) {
 
   const user = useContext(CurrentUserContext);
-
   // Определяем, являемся ли мы владельцем текущей карточки
-  const isOwn = card.owner._id === user._id;
+  const isOwn = card.owner._id === user?._id;
 
 // Создаём переменную, которую после зададим в `className` для кнопки удаления
   const cardDeleteButtonClassName = (
@@ -18,7 +17,7 @@ function Card({card, onCardClick, onDeleteCard, onCardLike, onCardDelete}) {
   );
 
   // Определяем, есть ли у карточки лайк, поставленный текущим пользователем
-  const isLiked = card.likes.some(i => i._id === user._id);
+  const isLiked = card.likes.some(i => i._id === user?._id);
 
 // Создаём переменную, которую после зададим в `className` для кнопки лайка
   const cardLikeButtonClassName = (

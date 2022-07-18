@@ -1,7 +1,8 @@
-export const BASE_URL = 'https://auth.nomoreparties.co';
+export const BASE_URL = 'http://localhost:3001';
 
 export const register = (password, email) => {
   return fetch(`${BASE_URL}/signup`, {
+    credentials: 'include',
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -22,6 +23,7 @@ export const register = (password, email) => {
 
 export const authorize = (email, password) => {
   return fetch(`${BASE_URL}/signin`, {
+    credentials: 'include',
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -40,6 +42,7 @@ export const authorize = (email, password) => {
 
 export const getContent = (token) => {
   return fetch(`${BASE_URL}/users/me`, {
+    credentials: 'include',
     method: 'GET',
     headers: {
       'Accept': 'application/json',
