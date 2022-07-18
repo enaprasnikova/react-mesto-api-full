@@ -49,7 +49,9 @@ const options = {
     'http://localhost:3000',
     'http://localhost:3001',
     'http://frontend.mesto-evnap.nomoredomains.xyz',
+    'https://frontend.mesto-evnap.nomoredomains.xyz',
     'http://api.frontend.mesto-evnap.nomoredomains.xyz',
+    'https://api.frontend.mesto-evnap.nomoredomains.xyz',
   ],
   credentials: true // эта опция позволяет устанавливать куки
 };
@@ -57,6 +59,12 @@ const options = {
 app.use('*', cors(options)); // Подключаем первой миддлварой
 
 app.use(requestLogger);
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
