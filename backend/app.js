@@ -22,15 +22,11 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const auth = require('./middlewares/auth');
 
-const { STATUS_VALIDATION_ERROR } = require('./utils/statusCodes');
-
 const { urlPattern } = require('./utils/utils');
 
 const {
   STATUS_INTERNAL_ERROR,
   STATUS_NOT_FOUND,
-  STATUS_CONFLICT,
-  MONGO_DUPLICATE_ERROR_CODE,
 } = require('./utils/statusCodes');
 
 const { PORT = 3001 } = process.env;
@@ -70,7 +66,7 @@ app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
-  }).unknown(true),
+  }),
 }), login);
 
 app.post('/signup', celebrate({
@@ -80,15 +76,17 @@ app.post('/signup', celebrate({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
     avatar: Joi.string().pattern(urlPattern),
-  }).unknown(true),
+  }),
 }), createUser);
 
 app.use('/users', auth, userRoutes);
 
 app.use('/cards', auth, cardRoutes);
 
-app.use((req, res) => {
-  res.status(STATUS_NOT_FOUND).send({ message: 'Указан неправильный путь' });
+app.use(auth, (req, res, next) => {
+  const error = new Error('Указан неправильный путь');
+  error.statusCode = STATUS_NOT_FOUND;
+  next(error);
 });
 
 app.use(errorLogger);
@@ -98,14 +96,6 @@ app.use(errors());
 app.use((err, req, res, next) => {
   if (err.statusCode) {
     return res.status(err.statusCode).send({ message: err.message });
-  }
-
-  if (err.name === 'ValidationError' || err.name === 'CastError') {
-    return res.status(STATUS_VALIDATION_ERROR).send({ message: 'Ошибка валидации' });
-  }
-
-  if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
-    return res.status(STATUS_CONFLICT).send({ message: 'Емейл занят' });
   }
 
   return res.status(STATUS_INTERNAL_ERROR).send({ message: 'На сервере произошла ошибка' });

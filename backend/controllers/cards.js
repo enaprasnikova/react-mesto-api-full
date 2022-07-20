@@ -1,17 +1,13 @@
 const Cards = require('../models/card');
 
+const { NotFoundError } = require('../errors/notFoundError');
+
+const { ForbiddenError } = require('../errors/forbiddenError');
+
 const {
   STATUS_SUCCESS,
   STATUS_SUCCESS_CREATED,
-  STATUS_NOT_FOUND,
-  STATUS_FORBIDDEN,
 } = require('../utils/statusCodes');
-
-const throwError = (statusCode, message) => {
-  const error = new Error(message);
-  error.statusCode = statusCode;
-  throw error;
-};
 
 module.exports.getCards = (req, res) => {
   Cards.find({}, '-__v')
@@ -22,7 +18,7 @@ module.exports.getCards = (req, res) => {
     });
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
 
@@ -39,7 +35,8 @@ module.exports.createCard = (req, res) => {
             createdAt: populatedCard.createdAt,
           });
         });
-    });
+    })
+    .catch(next);
 };
 
 module.exports.deleteCard = (req, res, next) => {
@@ -48,16 +45,16 @@ module.exports.deleteCard = (req, res, next) => {
     .populate('likes', '-password -__v')
     .then((card) => {
       if (!card) {
-        throwError(STATUS_NOT_FOUND, 'Карточка не найдена');
+        throw new NotFoundError('Карточка не найдена');
       }
 
       if (req.user._id !== card.owner._id.toString()) {
-        throwError(STATUS_FORBIDDEN, 'Нет прав на удаление карточки');
+        throw new ForbiddenError('Нет прав на удаление карточки');
       }
       return card;
     })
+    .then((card) => card.remove())
     .then((card) => {
-      card.remove();
       res.status(STATUS_SUCCESS).send(card);
     })
     .catch(next);
@@ -76,7 +73,7 @@ module.exports.likeCard = (req, res, next) => {
     .populate('likes', '-password -__v')
     .then((card) => {
       if (!card) {
-        throwError(STATUS_NOT_FOUND, 'Карточка не найдена');
+        throw new NotFoundError('Карточка не найдена');
       }
       res.status(STATUS_SUCCESS).send(card);
     })
@@ -96,7 +93,7 @@ module.exports.dislikeCard = (req, res, next) => {
     .populate('likes', '-password -__v')
     .then((card) => {
       if (!card) {
-        throwError(STATUS_NOT_FOUND, 'Карточка не найдена');
+        throw new NotFoundError('Карточка не найдена');
       }
       res.status(STATUS_SUCCESS).send(card);
     })

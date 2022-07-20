@@ -4,6 +4,14 @@ const jwt = require('jsonwebtoken');
 
 const Users = require('../models/user');
 
+const { ValidatorError } = require('../errors/validationError');
+
+const { UnauthorizedError } = require('../errors/unauthorizedError');
+
+const { NotFoundError } = require('../errors/notFoundError');
+
+const { ConflictError } = require('../errors/conflictError');
+
 const SALT_ROUNDS = 10;
 
 const { JWT_SECRET, NODE_ENV } = process.env;
@@ -11,29 +19,21 @@ const { JWT_SECRET, NODE_ENV } = process.env;
 const {
   STATUS_SUCCESS,
   STATUS_SUCCESS_CREATED,
-  STATUS_VALIDATION_ERROR,
-  STATUS_NOT_FOUND,
-  STATUS_FORBIDDEN,
   STATUS_UNAUTHORIZED_ERROR,
+  MONGO_DUPLICATE_ERROR_CODE,
 } = require('../utils/statusCodes');
 
-const throwError = (statusCode, message) => {
-  const error = new Error(message);
-  error.statusCode = statusCode;
-  throw error;
-};
-
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throwError(STATUS_VALIDATION_ERROR, 'Не передан емейл или пароль');
+    throw new ValidatorError('Не передан емейл или пароль');
   }
 
   Users.findOne({ email }).select('+password')
     .then((foundUser) => {
       if (!foundUser) {
-        throwError(STATUS_FORBIDDEN, 'Неправильный емейл или пароль');
+        throw new UnauthorizedError('Неправильный емейл или пароль');
       }
 
       return Promise.all([
@@ -43,7 +43,7 @@ module.exports.login = (req, res) => {
     })
     .then(([user, isPasswordCorrect]) => {
       if (!isPasswordCorrect) {
-        throwError(STATUS_FORBIDDEN, 'Неправильный емейл или пароль');
+        throw new UnauthorizedError('Неправильный емейл или пароль');
       }
 
       return jwt.sign(
@@ -56,9 +56,9 @@ module.exports.login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
-      res
-        .status(STATUS_UNAUTHORIZED_ERROR)
-        .send({ message: err.message });
+      const error = new Error(err.message);
+      error.statusCode = STATUS_UNAUTHORIZED_ERROR;
+      next(error);
     });
 };
 
@@ -66,7 +66,7 @@ module.exports.getUserInfo = (req, res, next) => {
   Users.findById(req.user._id, '-password -__v')
     .then((user) => {
       if (!user) {
-        throwError(STATUS_NOT_FOUND, 'Пользователь не найден');
+        throw new NotFoundError('Пользователь не найден');
       }
       res.send(user);
     })
@@ -77,7 +77,7 @@ module.exports.getUser = (req, res, next) => {
   Users.findById(req.params.userId, '-password -__v')
     .then((user) => {
       if (!user) {
-        throwError(STATUS_NOT_FOUND, 'Пользователь не найден');
+        throw new NotFoundError('Пользователь не найден');
       }
       res.send(user);
     })
@@ -94,7 +94,7 @@ module.exports.createUser = (req, res, next) => {
   } = req.body;
 
   if (!email || !password) {
-    throwError(STATUS_VALIDATION_ERROR, 'Не передан емейл или пароль');
+    throw new ValidatorError('Не передан емейл или пароль');
   }
 
   bcrypt.hash(password, SALT_ROUNDS)
@@ -112,7 +112,17 @@ module.exports.createUser = (req, res, next) => {
       avatar: user.avatar,
       email: user.email,
     }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new ValidatorError('Ошибка валидации'));
+      }
+
+      if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
+        next(new ConflictError('Емейл занят'));
+      }
+
+      next(err);
+    });
 };
 
 module.exports.getUsers = (req, res) => {
@@ -137,7 +147,7 @@ module.exports.updateUser = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        throwError(STATUS_NOT_FOUND, 'Пользователь не найден');
+        throw new NotFoundError('Пользователь не найден');
       }
       res.send(user);
     });
@@ -158,7 +168,7 @@ module.exports.updateUserAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        throwError(STATUS_NOT_FOUND, 'Пользователь не найден');
+        throw new NotFoundError('Пользователь не найден');
       }
       res.send(user);
     });
