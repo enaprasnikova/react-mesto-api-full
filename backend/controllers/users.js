@@ -125,14 +125,15 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   Users.find({}, '-password -__v')
     .then((users) => {
       res.status(STATUS_SUCCESS).send(users);
-    });
+    })
+    .catch(next);
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
   const owner = req.user._id;
 
@@ -150,10 +151,16 @@ module.exports.updateUser = (req, res) => {
         throw new NotFoundError('Пользователь не найден');
       }
       res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidatorError('Некорректные данные при обновлении пользователя'));
+      }
+      next(err);
     });
 };
 
-module.exports.updateUserAvatar = (req, res) => {
+module.exports.updateUserAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const owner = req.user._id;
 
@@ -171,5 +178,11 @@ module.exports.updateUserAvatar = (req, res) => {
         throw new NotFoundError('Пользователь не найден');
       }
       res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidatorError('Некорректные данные при обновлении аватара'));
+      }
+      next(err);
     });
 };

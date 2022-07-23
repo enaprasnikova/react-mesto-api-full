@@ -9,13 +9,14 @@ const {
   STATUS_SUCCESS_CREATED,
 } = require('../utils/statusCodes');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Cards.find({}, '-__v')
     .populate('owner', '-password -__v')
     .populate('likes', '-password -__v')
     .then((cards) => {
       res.status(STATUS_SUCCESS).send(cards);
-    });
+    })
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
