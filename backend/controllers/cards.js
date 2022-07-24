@@ -4,6 +4,8 @@ const { NotFoundError } = require('../errors/notFoundError');
 
 const { ForbiddenError } = require('../errors/forbiddenError');
 
+const { ValidatorError } = require('../errors/validationError');
+
 const {
   STATUS_SUCCESS,
   STATUS_SUCCESS_CREATED,
@@ -37,7 +39,12 @@ module.exports.createCard = (req, res, next) => {
           });
         });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new ValidatorError('Некорректные данные при создании карточки'));
+      }
+      return next(err);
+    });
 };
 
 module.exports.deleteCard = (req, res, next) => {

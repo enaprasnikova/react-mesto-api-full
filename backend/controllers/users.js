@@ -114,14 +114,14 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new ValidatorError('Ошибка валидации'));
+        return next(new ValidatorError('Ошибка валидации'));
       }
 
       if (err.code === MONGO_DUPLICATE_ERROR_CODE) {
-        next(new ConflictError('Емейл занят'));
+        return next(new ConflictError('Емейл занят'));
       }
 
-      next(err);
+      return next(err);
     });
 };
 
@@ -154,9 +154,9 @@ module.exports.updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidatorError('Некорректные данные при обновлении пользователя'));
+        return next(new ValidatorError('Некорректные данные при обновлении пользователя'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -181,8 +181,8 @@ module.exports.updateUserAvatar = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidatorError('Некорректные данные при обновлении аватара'));
+        return next(new ValidatorError('Некорректные данные при обновлении аватара'));
       }
-      next(err);
+      return next(err);
     });
 };
